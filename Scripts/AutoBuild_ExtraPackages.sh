@@ -20,13 +20,12 @@ coolsnowwolf/lede:master)
 	AddPackage svn other luci-app-socat Lienol/openwrt-package/trunk
 	AddPackage svn other luci-app-eqos kenzok8/openwrt-packages/trunk
 	AddPackage git other OpenClash vernesong master
-	AddPackage git other luci-app-adblock-plus small-5 master
 	# AddPackage git other OpenAppFilter destan19 master
 	# AddPackage svn other luci-app-ddnsto linkease/nas-packages/trunk/luci
 	# AddPackage svn other ddnsto linkease/nas-packages/trunk/network/services
 	
 	case "${TARGET_PROFILE}" in
-	asus_rt-acrh17 | d-team_newifi-d2 | xiaoyu_xy-c5)
+	asus_rt-acrh17 | d-team_newifi-d2)
 		AddPackage git other luci-app-usb3disable rufengsuixing master
 	;;
 	x86_64)
