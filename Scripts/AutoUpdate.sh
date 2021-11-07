@@ -3,7 +3,7 @@
 # AutoUpdate for Openwrt
 # Dependences: bash wget-ssl/wget/uclient-fetch curl openssl jsonfilter
 
-Version=V6.6.9
+Version=V6.7
 
 function TITLE() {
 	clear && echo "Openwrt-AutoUpdate Script by Hyy2001 ${Version}"
@@ -298,8 +298,8 @@ function UPDATE_SCRIPT() {
 	DOWNLOADER --file-name AutoUpdate.sh --no-url-name --dl ${DOWNLOADERS} --url "$2" --path /tmp --timeout 5 --type 脚本
 	if [[ -s /tmp/AutoUpdate.sh ]];then
 		chmod +x /tmp/AutoUpdate.sh
-		Script_Version=$(egrep -o "V[0-9]+.[0-9].+" /tmp/AutoUpdate.sh | awk 'NR==1')
-		Banner_Version=$(egrep -o "V[0-9]+.[0-9].+" /etc/banner)
+		Script_Version=$(awk -F '=' '/Version/{print $2}' /tmp/AutoUpdate.sh | awk 'NR==1')
+		Banner_Version=$(egrep -o "V[0-9.]+" /etc/banner)
 		mv -f /tmp/AutoUpdate.sh $1
 		ECHO "脚本保存路径: [$1]"
 		[[ -n ${Banner_Version} && $1 == /bin ]] && sed -i "s?${Banner_Version}?${Script_Version}?g" /etc/banner
@@ -348,7 +348,7 @@ function ANALYZE_API() {
 	local url name date size version count sha256
 	local API_Cache=${Tmp_Path}/API_Cache
 	[[ $(CHECK_TIME ${API_File} 1) == false ]] && {
-		DOWNLOADER --path ${Tmp_Path} --file-name API_Cache --dl ${DOWNLOADERS} --url "$(URL_X ${Github_Release}/API G@@1 F@@1) ${Github_API}@@1 " --no-url-name --timeout 3 --type 固件信息 --quiet
+		DOWNLOADER --path ${Tmp_Path} --file-name API_Cache --dl ${DOWNLOADERS} --url "$(URL_X ${Github_Release}/API G@@1 F@@1) ${Github_API}@@1 " --no-url-name --timeout 5 --type 固件信息 --quiet
 		[[ ! $? == 0 || -z $(cat ${API_Cache} 2> /dev/null) ]] && {
 			ECHO r "Github API 请求错误,请检查网络后重试!"
 			EXIT 2
@@ -403,7 +403,7 @@ function GET_CLOUD_LOG() {
 	;;
 	esac
 	[[ $(CHECK_TIME ${Tmp_Path}/Update_Logs.json 1) == false ]] && {
-		DOWNLOADER --path ${Tmp_Path} --file-name Update_Logs.json --dl ${DOWNLOADERS} --url "$(URL_X ${Github_Release} G@@1)" --timeout 3 --type 固件更新日志 --quiet
+		DOWNLOADER --path ${Tmp_Path} --file-name Update_Logs.json --dl ${DOWNLOADERS} --url "$(URL_X ${Github_Release} G@@1)" --timeout 5 --type 固件更新日志 --quiet
 	}
 	[[ -s ${Tmp_Path}/Update_Logs.json ]] && {
 		Result=$(jsonfilter -i ${Tmp_Path}/Update_Logs.json -e '@["'""${TARGET_PROFILE}""'"]["'""${Version}""'"]' 2> /dev/null)
@@ -759,20 +759,20 @@ function DOWNLOADER() {
 	done
 	case "${DL_Downloader}" in
 	wget | wget-ssl)
-		DL_Template="$(which wget) --quiet --no-check-certificate --no-dns-cache -x -4 --tries 1 --timeout 5 -O"
+		DL_Template="$(which wget) --quiet --no-check-certificate -x -4 --tries 1 --timeout 10 -O"
 	;;
 	curl)
-		DL_Template="$(which curl) --silent --insecure -L -k --connect-timeout 5 --retry 1 -o"
+		DL_Template="$(which curl) --silent --insecure -L -k --connect-timeout 10 --retry 1 -o"
 	;;
 	uclient-fetch)
-		DL_Template="$(which uclient-fetch) --quiet --no-check-certificate -4 --timeout 5 -O"
+		DL_Template="$(which uclient-fetch) --quiet --no-check-certificate -4 --timeout 10 -O"
 	;;
 	esac
 	[[ ${Test_Mode} == 1  || ${Verbose_Mode} == 1 ]] && {
 		DL_Template="${DL_Template/ --quiet / }"
 		DL_Template="${DL_Template/ --silent / }"
 	}
-	[[ -n ${DL_Timeout} ]] && DL_Template="${DL_Template/-timeout 5/-timeout ${DL_Timeout}}"
+	[[ -n ${DL_Timeout} ]] && DL_Template="${DL_Template/-timeout 10/-timeout ${DL_Timeout}}"
 	local E=0 u;while [[ ${E} != ${DL_URL_Count} ]];do
 		DL_URL_Cache="${DL_URL[$E]}"
 		DL_Retries="${DL_URL_Cache##*@@}"
