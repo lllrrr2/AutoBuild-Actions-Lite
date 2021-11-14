@@ -19,19 +19,13 @@ coolsnowwolf/lede:master)
 	AddPackage svn other luci-app-smartdns kenzok8/openwrt-packages/trunk
 	AddPackage svn other luci-app-socat Lienol/openwrt-package/trunk
 	AddPackage svn other luci-app-eqos kenzok8/openwrt-packages/trunk
-	AddPackage git other OpenClash vernesong master
 	# AddPackage git other OpenAppFilter destan19 master
 	# AddPackage svn other luci-app-ddnsto linkease/nas-packages/trunk/luci
 	# AddPackage svn other ddnsto linkease/nas-packages/trunk/network/services
 	
 	case "${TARGET_PROFILE}" in
-	asus_rt-acrh17 | d-team_newifi-d2)
+	d-team_newifi-d2 | p2w_r619ac-128m)
 		AddPackage git other luci-app-usb3disable rufengsuixing master
-	;;
-	x86_64)
-		AddPackage git other openwrt-passwall xiaorouji main
-		rm -rf packages/lean/autocore
-		AddPackage git lean autocore-modify Hyy2001X master
 	;;
 	esac
 ;;
