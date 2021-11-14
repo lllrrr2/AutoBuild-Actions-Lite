@@ -4,7 +4,7 @@
 # Sync
 
 # 上游仓库与分支
-INPUT_UPSTREAM_REPOSITORY=Hyy2001X/AutoBuild-Actions
+INPUT_UPSTREAM_REPOSITORY=Hyy2001X/AutoBuild-Actions-Lite
 INPUT_UPSTREAM_BRANCH=master
 
 # 文件同步列表,按需修改
